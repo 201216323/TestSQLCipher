@@ -1,6 +1,7 @@
 # TestSQLCipher
 项目中使用到了SQLCipher数据库，之前没有接触到这个框架，所以本片就详细的说明一下SQLCipher数据库。
 
+## Github地址：https://github.com/201216323/TestSQLCipher
 
 ## 1：简介
 [SQLCipher](https://www.zetetic.net/sqlcipher/)是一个在SQLite基础上进行扩展的一款开源数据库，比起Android原生的SQLite数据库来说，最主要的优势就是可加密解密，SQLCipher具有较小的占用空间和出色的性能，因此它非常适合于保护嵌入式应用程序数据库，并且非常适合于移动开发。
@@ -487,7 +488,49 @@ public class OriginSQLiteOpenHelper extends SQLiteOpenHelper {
 
 ```
 
-到此为止：两种数据库完事，运行程序后，我们可以在APP的私有文件下看到两种数据库如下：
+到此为止：两种数据库完事，下面运行程序继续说明。
+
+#### （6.0）我们可以在APP的私有文件下看到两种数据库如下：
+
+![image](https://github.com/201216323/TestSQLCipher/blob/master/pic/device_explore.png?raw=true)
+
+- test1.db为使用SQLCipher生成的数据库
+- test2.db为原生数据库
+
+导出这两种数据库，用“SQLite Expert Personal 3”软件打开，可以发现test1.db打开因为加密原因，打开报错，test2.db直接可以打开，查看相应的表、字段
+
+#### （7.0）解密test1.db这个加密数据库
+
+解密数据库，需要用到"sqlcipher-3.0.1.zip"这个软件，我们主要使用里面的bin目录下的方法，最好将两个数据库保存在这个bin目录中，因为需要用到cmd命令，方便操作，下面说一下这个软件的使用方法：
+
+![image](https://github.com/201216323/TestSQLCipher/blob/master/pic/sqlcipher3.png?raw=true)
+
+生成的test111.db数据库
+
+![image](https://github.com/201216323/TestSQLCipher/blob/master/pic/sqlcipher-g.png?raw=true)
+
+打开次数据看可以查看相应的表和字段
+
+![image](https://github.com/201216323/TestSQLCipher/blob/master/pic/sqlcipher-o.png?raw=true)
+
+到此为止，我们成功的使用Sqlcipher加密了数据库，并解密数据库，看到了数据库中的数据。
+
+但是：我在将同样的方法用到项目中的数据库文件的时候，发现在命令行执行“*attach database 'test111.db' as test111 key '';*”命令的时候会出现“*加密的错误*”，明明在我的测试项目上是可以解密的，用到项目上就有问题了，接着往下看，，。。
 
 
+#### （8.0）SQLCipher版本适配问题。
+
+上述出现加密错误的提示，经过我搜集资料发现错误原因是SQLCipher的版本不匹配导致的，本项目中用到的版本是最新的3.0系列，而我项目中根据时间推算用的应该是2.0系列版本，所以我又从网上下载了一个破解2.0版本的这个解密工具---“**SQLCipher2.0.rar**”，然后按照上面的cmd命令行过程，最终一样成功解密了项目中的数据库。
+
+**在解密的时候要注意数据库名称和项目中的加密密码要匹配。**
+
+#### （9.0）使用差异化
+
+在software文件夹下，可以发现还有一个“**SQLCipher+for+Android+v2.2.2.zip**”文件，这个是什么呢？？
+
+可以发现，我在导入SQLCipher的时候，采用的是在build.gradle文件中引入，但是，我的项目中使用的就不是这种方法，项目中采用的是libs目录添加jar包的方式，如果是这种方法，就需要在项目中引入这个压缩包中的相关文件，此文件提供了x86和arm 底层的适配，可以根据我们具体的项目来选择使用。
+
+## 3.总结
+
+在使用这个数据库的过程中，遇到过很多坑，最重要的就是版本的适配这个问题，在网上查看了需要资料，据说微信内部用的就是这个框架，由此可见学习使用这个框架还是非常有必要的。
 
